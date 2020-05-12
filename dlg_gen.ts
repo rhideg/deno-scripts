@@ -3,9 +3,7 @@ import { readJsonSync } from "https://deno.land/std/fs/read_json.ts";
 import { writeFileStrSync } from "https://deno.land/std/fs/write_file_str.ts";
 
 const name = 'data';
-let fStr: string = 
-`<div fxFlex fxLayout="column" style="height: 100%; overflow: auto;">\n
-\t<form #formNewSzerz="ngForm">\n`;
+let fStr: string = `<div fxFlex fxLayout="column" style="height: 100%; overflow: auto;">\n\t<form #formNewSzerz="ngForm">\n`;
 const jsO: any = await readJsonSync('test.json');
 
 for (const i in jsO) {
@@ -40,9 +38,7 @@ for (const i in jsO) {
     `
 }
 
-fStr += `
-\t</form>
-</div>\n`;
+fStr += `\t</form>\n</div>\n`;
 
 
 writeFileStrSync(`${name}.html`, fStr);
