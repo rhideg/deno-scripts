@@ -1,6 +1,7 @@
 import { bgBlue, white } from "https://deno.land/std/fmt/colors.ts";
 import { readJsonSync } from "https://deno.land/std/fs/read_json.ts";
 import { writeFileStrSync } from "https://deno.land/std/fs/write_file_str.ts";
+import {isDate} from 'https://raw.githubusercontent.com/rhideg/deno-scripts/master/str_is_date.ts';
 
 const { args } = Deno;
 
@@ -19,7 +20,11 @@ async function createHtmlString(name: string, src: string) {
         let t = '';
         switch (typeof (jsO[i])) {
             case 'string':
-                t = 'text';
+                if (isDate(jsO[i].toString())) {
+                    t = 'date';
+                } else {
+                    t = 'text';
+                }
                 break;
             case 'number':
                 t = 'number';
@@ -30,22 +35,45 @@ async function createHtmlString(name: string, src: string) {
             default:
                 t = 'text';
                 break;
+
         }
 
-        const il = i.toLowerCase().toString();
-        const inp = (t === 'text' || t === 'number')
-            ? `\t\t<mat-form-field class="form-field-dlg">
-    \t\t\t<input name="${il}" matInput [(ngModel)]="${name}.${i}" type="${t}" required>
-    \t\t</mat-form-field>`
-            : `\t\t\t<mat-checkbox name="${il}" [(ngModel)]="${name}.${i}"></mat-checkbox>`;
+        const il: string = i.toLowerCase().toString();
+        let inp: string = '';
+
+        switch (t) {
+            case 'text':
+            case 'number':
+                inp = `\t\t<mat-form-field class="form-field-dlg">
+                \t\t\t<input name="${il}" matInput [(ngModel)]="${name}.${i}" type="${t}" required>
+                \t\t</mat-form-field>`;
+                break;
+            case 'boolean':
+                inp = `\t\t\t<mat-checkbox name="${il}" [(ngModel)]="${name}.${i}"></mat-checkbox>`;
+                break;
+            case 'date':
+                inp = `
+                \t\t<mat-form-field class="form-field-dlg">
+                \t\t\t<input matInput [matDatepicker]="picker${i}" [(ngModel)]="${name}.${i}" name="${il}" required>
+                \t\t\t<mat-datepicker-toggle matSuffix [for]="picker${i}"></mat-datepicker-toggle>
+                \t\t\t<mat-datepicker #picker${i}></mat-datepicker>
+                \t\t</mat-form-field>`;
+                break;
+            default:
+                inp = `\t\t<mat-form-field class="form-field-dlg">
+                \t\t\t<input name="${il}" matInput [(ngModel)]="${name}.${i}" type="text" required>
+                \t\t</mat-form-field>`;
+                break;
+        }
+
 
         fStr +=
             `\n
-    \t<div fxLayout="row" fxLayoutAlign="space-between center" style="height: 50px;">
-    \t\t<span class="span-label">${i}</span>
-    ${inp}
-    \t</div>
-    `
+            \t<div fxLayout="row" fxLayoutAlign="space-between center" style="height: 50px;">
+            \t\t<span class="span-label">${i}</span>
+            ${inp}
+            \t</div>`
+
     }
 
 
