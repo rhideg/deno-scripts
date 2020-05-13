@@ -16,7 +16,7 @@ async function createHtmlString(name: string, src: string) {
     const jsO: any = await readJsonSync(src);
 
 
-    for (const i in jsO) {        
+    for (const i in jsO) { 
         let t = '';
         switch (typeof (jsO[i])) {
             case 'string':
@@ -31,6 +31,9 @@ async function createHtmlString(name: string, src: string) {
                 break;
             case 'boolean':
                 t = 'cb';
+                break;
+            case 'object':
+                t = 'ms';
                 break;
             default:
                 t = 'text';
@@ -58,6 +61,17 @@ async function createHtmlString(name: string, src: string) {
                 \t\t\t<mat-datepicker-toggle matSuffix [for]="picker${i}"></mat-datepicker-toggle>
                 \t\t\t<mat-datepicker #picker${i}></mat-datepicker>
                 \t\t</mat-form-field>`;
+                break;
+            case 'ms':
+                inp = `
+                \t\t<mat-form-field class="form-field-dlg">
+                \t\t\t<mat-select required name="${il}" [(ngModel)]="${name}.${i}">
+                \t\t\t\t<mat-option *ngFor="let item of arr${i}" [value]="item.Id">
+                \t\t\t\t\t{{item.name}}
+                \t\t\t\t</mat-option>
+                \t\t\t</mat-select>
+                \t\t</mat-form-field>
+                `
                 break;
             default:
                 inp = `\t\t<mat-form-field class="form-field-dlg">
