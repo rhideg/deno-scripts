@@ -1,4 +1,4 @@
-import { bgBlue, white, bold } from "https://deno.land/std/fmt/colors.ts";
+import { bgBlue, white } from "https://deno.land/std/fmt/colors.ts";
 import { readJsonSync } from "https://deno.land/std/fs/read_json.ts";
 import { writeFileStrSync } from "https://deno.land/std/fs/write_file_str.ts";
 
@@ -14,7 +14,8 @@ async function createHtmlString(name: string, src: string) {
     let fStr: string = `<div fxFlex fxLayout="column" style="height: 100%; overflow: auto;">\n\t<form #form${fName}="ngForm">\n`;
     const jsO: any = await readJsonSync(src);
 
-    for (const i in jsO) {
+
+    for (const i in jsO) {        
         let t = '';
         switch (typeof (jsO[i])) {
             case 'string':
@@ -34,9 +35,9 @@ async function createHtmlString(name: string, src: string) {
         const il = i.toLowerCase().toString();
         const inp = (t === 'text' || t === 'number')
             ? `\t\t<mat-form-field class="form-field-dlg">
-    \t\t\t<input name="${il}" matInput [(ngModel)]="${name}.${i}" type="${t}">
+    \t\t\t<input name="${il}" matInput [(ngModel)]="${name}.${i}" type="${t}" required>
     \t\t</mat-form-field>`
-            : `\t\t\t<mat-checkbox [(ngModel)]="${name}.${i}"></mat-checkbox>`;
+            : `\t\t\t<mat-checkbox name="${il}" [(ngModel)]="${name}.${i}"></mat-checkbox>`;
 
         fStr +=
             `\n
